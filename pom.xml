@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-parent</artifactId>
+    <version>17</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.jamonapi</groupId>
+  <artifactId>jamon</artifactId>
+  <version>2.7.2-SNAPSHOT</version>
+  <name>Commons JAMon</name>
+  <inceptionYear>2011</inceptionYear>
+  <url>http://jamonapi.sourceforge.net/</url>
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.15</version>
+      <type>jar</type>
+      <optional>true</optional>
+    <exclusions>
+        <exclusion>
+          <groupId>com.sun.jdmk</groupId>
+          <artifactId>jmxtools</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jmx</groupId>
+          <artifactId>jmxri</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.jms</groupId>
+          <artifactId>jms</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.mail</groupId>
+          <artifactId>mail</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compile.source>1.5</maven.compile.source>
+    <maven.compile.target>1.5</maven.compile.target>
+    <commons.componentid>jamon</commons.componentid>
+    <commons.jira.id>JAMON</commons.jira.id>
+    <commons.jira.pid>12310474</commons.jira.pid>
+    <commons.release.version>0.1</commons.release.version>
+    <commons.rc.version>RC1</commons.rc.version>
+    <commons.binary.suffix>-bin</commons.binary.suffix>
+  </properties>
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <testSourceDirectory>src/test</testSourceDirectory>
+    <testResources>
+      <testResource>
+        <directory>src/test</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/bin.xml</descriptor>
+            <descriptor>src/assembly/src.xml</descriptor>
+          </descriptors>
+          <tarLongFileMode>gnu</tarLongFileMode>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <mavenExecutorId>forked-path</mavenExecutorId>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <!-- generate the PMD reports -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <minimumTokens>200</minimumTokens>
+          <targetJdk>${maven.compile.source}</targetJdk>
+          <rulesets>
+            <ruleset>/rulesets/basic.xml</ruleset>
+            <ruleset>/rulesets/finalizers.xml</ruleset>            
+            <ruleset>/rulesets/imports.xml</ruleset>
+            <ruleset>/rulesets/unusedcode.xml</ruleset>
+          </rulesets>
+        </configuration>
+      </plugin>          
+      <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <version>1.2</version>
+          <configuration>
+              <threshold>Normal</threshold>
+              <effort>Default</effort>
+         </configuration>
+      </plugin>
+    </plugins>
+  </reporting>  
+  <distributionManagement>
+    <site>
+      <id>apache.website</id>
+      <name>Apache Website</name>
+      <url>${commons.deployment.protocol}://people.apache.org/www/commons.apache.org/jamon/</url>
+    </site>
+  </distributionManagement>
+  <profiles>
+    <profile>
+      <id>rc</id>
+      <distributionManagement>
+        <!-- Cannot define in parent ATM, see COMMONSSITE-26 -->
+        <site>
+          <id>apache.website</id>
+          <name>Apache Commons Release Candidate Staging Site</name>
+          <url>${commons.deployment.protocol}://people.apache.org/www/people.apache.org/builds/commons/${commons.componentid}/${commons.release.version}/${commons.rc.version}/site</url>
+        </site>
+      </distributionManagement>
+    </profile>
+  </profiles>
+</project>
